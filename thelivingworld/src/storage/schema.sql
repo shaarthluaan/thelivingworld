@@ -1,0 +1,46 @@
+-- Schema for The Living World PostgreSQL Database
+
+CREATE TABLE IF NOT EXISTS game_snapshots (
+    id VARCHAR(64) PRIMARY KEY DEFAULT 'latest',
+    data JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS game_state (
+    id VARCHAR(64) PRIMARY KEY DEFAULT 'current',
+    season_id VARCHAR(64) NOT NULL,
+    era INTEGER NOT NULL DEFAULT 1,
+    progress BIGINT NOT NULL DEFAULT 0,
+    start_time BIGINT,
+    end_time BIGINT,
+    discoveries JSONB DEFAULT '{}'::jsonb,
+    stats JSONB DEFAULT '{}'::jsonb,
+    current_event JSONB,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS habitants (
+    id VARCHAR(128) PRIMARY KEY,
+    name VARCHAR(128) NOT NULL,
+    level INTEGER NOT NULL DEFAULT 1,
+    experience INTEGER NOT NULL DEFAULT 0,
+    contribution INTEGER NOT NULL DEFAULT 0,
+    exploration INTEGER NOT NULL DEFAULT 0,
+    defense INTEGER NOT NULL DEFAULT 0,
+    title VARCHAR(64),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS processed_events (
+    id VARCHAR(128) PRIMARY KEY,
+    event_type VARCHAR(64),
+    user_id VARCHAR(128),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS game_feed (
+    id SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    event_time BIGINT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

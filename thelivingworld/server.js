@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
-import { testConnection } from './src/storage/db.js';
+import { testConnection, initSchema } from './src/storage/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,6 +64,15 @@ export const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Endpoint GET /env.js
+  if (req.method === 'GET' && pathname === '/env.js') {
+    res.writeHead(200, { 'Content-Type': 'application/javascript' });
+    const backendUrl = process.env.BACKEND_URL || '';
+    const wsUrl = process.env.WS_URL || (backendUrl ? backendUrl.replace(/^http/, 'ws') : `ws://${req.headers.host || 'localhost:3000'}`);
+    res.end(`window.ENV = { BACKEND_URL: ${JSON.stringify(backendUrl)}, WS_URL: ${JSON.stringify(wsUrl)} };`);
+    return;
+  }
+
   // Static file serving
   let targetPath = pathname === '/' ? '/index.html' : pathname;
   let filePath = path.normalize(path.join(__dirname, targetPath));
@@ -111,12 +120,19 @@ wss.on('connection', (ws) => {
   });
 });
 
+
 const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename);
 
 if (isMainModule) {
-  server.listen(PORT, HOST, () => {
+  server.listen(PORT, HOST, async () => {
     console.log(`[The Living World] Server listening on http://${HOST}:${PORT}`);
     console.log(`[The Living World] Health endpoint: http://${HOST}:${PORT}/health`);
     console.log(`[The Living World] WebSocket endpoint: ws://${HOST}:${PORT}`);
+    const initResult = await initSchema();
+    if (initResult.initialized) {
+      console.log('[The Living World] PostgreSQL schema initialized successfully.');
+    } else {
+      console.log(`[The Living World] PostgreSQL schema status: ${initResult.reason}`);
+    }
   });
 }
