@@ -1,0 +1,1 @@
+export class MockEventProvider { constructor(bus){this.bus=bus;this.seq=0} send(type,extra={}){const id=`mock-${Date.now()}-${++this.seq}`;const event={id,type,userId:extra.userId||`user-${this.seq%24}`,username:extra.username||['Luna','Maya','Theo','Nina','Caio'][this.seq%5],timestamp:Date.now(),...extra};this.bus.emit('external',event);return event} }

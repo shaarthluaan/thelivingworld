@@ -1,0 +1,2 @@
+const KEY='the-living-world-state-v1',BACKUP=`${KEY}-backup`;
+export class Storage { load(){for(const key of [KEY,BACKUP])try{const v=JSON.parse(localStorage.getItem(key));if(v&&v.season&&Array.isArray(v.habitants))return v}catch{}return null} save(state){try{const raw=JSON.stringify(state);localStorage.setItem(BACKUP,localStorage.getItem(KEY)||raw);localStorage.setItem(KEY,raw);return true}catch(e){console.error('Storage',e);return false}} clear(){localStorage.removeItem(KEY);localStorage.removeItem(BACKUP)} }

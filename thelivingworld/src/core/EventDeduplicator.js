@@ -1,0 +1,1 @@
+export class EventDeduplicator { constructor(ids=[],limit=5000){this.limit=limit;this.ids=new Set(ids)} seen(id){if(this.ids.has(id))return true;this.ids.add(id);if(this.ids.size>this.limit)this.ids.delete(this.ids.values().next().value);return false} values(){return [...this.ids]} }

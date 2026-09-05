@@ -1,0 +1,1 @@
+export class Logger { constructor(limit=100){this.entries=[];this.limit=limit} add(level,message){this.entries.push({level,message,time:Date.now()});if(this.entries.length>this.limit)this.entries.shift();if(level==='error')console.error('[Living World]',message)} }

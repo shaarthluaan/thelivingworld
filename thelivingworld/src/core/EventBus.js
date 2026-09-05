@@ -1,0 +1,1 @@
+export class EventBus { constructor(){this.handlers=new Map()} on(type,fn){const a=this.handlers.get(type)||[];a.push(fn);this.handlers.set(type,a);return()=>this.handlers.set(type,a.filter(x=>x!==fn))} emit(type,data){for(const fn of this.handlers.get(type)||[])try{fn(data)}catch(e){console.error('EventBus handler',e)}} }
